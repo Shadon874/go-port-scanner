@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -12,7 +13,25 @@ import (
 func main() {
 	target := flag.String("target", "localhost", "Target host to scan")
 	scanRange := flag.String("range", "1-1024", "Port range to scan (e.g., 1-1024)")
+	help := flag.Bool("help", false, "Display help")
+
+	for i, arg := range os.Args {
+		switch arg {
+		case "-t", "--target":
+			os.Args[i] = "-target"
+		case "-r", "--range":
+			os.Args[i] = "-range"
+		case "-h", "--help":
+			os.Args[i] = "-help"
+		}
+	}
+
 	flag.Parse()
+
+	if *help {
+		printHelp()
+		return
+	}
 
 	hosts := strings.Split(*target, ",")
 	for _, host := range hosts {
@@ -68,4 +87,19 @@ func parsePortRange(scanRange string) (int, int, error) {
 func checkForInvalidHostname(hostname string) error {
 	_, err := net.LookupHost(hostname)
 	return err
+}
+
+func printHelp() {
+	helpText := `
+Usage: portscanner [options]
+
+Options:
+  -t, --target   Target host to scan (default: localhost). You can specify multiple hosts separated by commas.
+  -r, --range    Port range to scan in the format start-end (default: 1-1024).
+  -h, --help     Display this help message.
+
+Example:
+  portscanner -t example.com,localhost -r 20-80
+`
+	fmt.Println(helpText)
 }
