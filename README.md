@@ -1,5 +1,3 @@
-Got you — here’s a **short and clean README** for your casual project:
-
 ---
 
 # PortScanner
